@@ -1,0 +1,39 @@
+steps:
+- id: '1 Run dbt'
+  name: 'fishtownanalytics/dbt:${_DBT_VERSION}'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |-
+      echo "==========================================================="
+      pwd
+      echo "==========================================================="
+      dbt deps --profiles-dir .
+      if [[ $? == 1 ]]; then
+       echo 'dbt deps is faild'
+       exit 1
+      fi
+      dbt debug --target ${_DBT_TARGET} --profiles-dir .
+      if [[ $? == 1 ]]; then
+       echo 'dbt debug is faild'
+       exit 1
+      fi
+      pwd
+      ls
+      dbt run --target ${_DBT_TARGET} --profiles-dir .
+      if [[ $? == 1 ]]; then
+       echo 'dbt run is faild'
+       exit 1
+      fi
+      dbt test --data --target ${_DBT_TARGET} --profiles-dir .
+      if [[ $? == 1 ]]; then
+       echo 'dbt test is faild'
+       exit 1
+      fi
+options:
+  logging: CLOUD_LOGGING_ONLY  
+timeout: 1200s
+tags: ['dbt']
+substitutions:
+  _DBT_VERSION: '1.0.0'
+  _DBT_TARGET: 'prod'

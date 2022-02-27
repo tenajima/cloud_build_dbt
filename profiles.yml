@@ -1,0 +1,12 @@
+cloud_build_dbt:
+  outputs:
+    prod:
+      type: bigquery
+      method: oauth
+      project: <set your project id!>
+      dataset: production
+      threads: 1
+      timeout_seconds: 300
+      priority: interactive
+      location: asia-northeast1
+      retries: 1
